@@ -1,71 +1,59 @@
+let humanScore = 0;
+let computerScore = 0;
+
 function getComputerChoice() {
   const option = ["piedra", "papel", "tijera"];
   const randomIndex = Math.floor(Math.random() * option.length);
-
   return option[randomIndex];
 }
 
-function getHumanChoice() {
-  const humanChoice = prompt("Escriba piedra, papel o tijera: ").toLowerCase();
-  if (!["piedra", "papel", "tijera"].includes(humanChoice)) {
-    console.log(
-      "Elección inválida. Por favor, elige entre piedra, papel o tijera."
-    );
-    return getHumanChoice();
-  }
-  
+function playRound(humanChoice) {
+  const computerChoice = getComputerChoice();
+  let result = "";
 
-  return humanChoice;
-}
-
-function playRound(humanChoice, computerChoice) {
   if (humanChoice === computerChoice) {
-    return "¡Es un empate!";
+    result = "¡Es un empate!";
   } else if (
     (humanChoice === "piedra" && computerChoice === "tijera") ||
     (humanChoice === "papel" && computerChoice === "piedra") ||
     (humanChoice === "tijera" && computerChoice === "papel")
   ) {
-    return "Ganaste";
+    result = "¡Ganaste esta ronda!";
+    humanScore++;
   } else {
-    return "Perdiste. La computadora ganó";
+    result = "Perdiste esta ronda. La computadora ganó";
+    computerScore++;
+  }
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.textContent = `Elegiste: ${humanChoice}. Computadora eligió: ${computerChoice}. ${result}`;
+
+  // Actualizar la puntuación
+  const scoreDiv = document.getElementById("score");
+  scoreDiv.textContent = `Puntuación: Humano ${humanScore} - Computadora ${computerScore}`;
+
+  // Verificar si alguien ha ganado
+  if (humanScore === 5 || computerScore === 5) {
+    const winner =
+      humanScore === 5
+        ? "¡Felicidades! Ganaste el juego."
+        : "La computadora ganó el juego. Mejor suerte la próxima vez.";
+    resultDiv.textContent = winner;
+
+    // Deshabilitar botones tras finalizar el juego
+    document
+      .querySelectorAll("button")
+      .forEach((button) => (button.disabled = true));
   }
 }
 
-function playGame(){
-    let humanScore = 0;
-    let computerScore = 0;
-
-    for(let i=0; i<5; i++){
-        const humanSelection = getHumanChoice();
-        const computerSelection = getComputerChoice();
-        const result = playRound(humanSelection, computerSelection);
-
-        console.log(`La elección fue: ${humanSelection}`);
-        console.log(`La elección de la computadora fue: ${computerSelection}`);
-        console.log(result);
-
-        if(result === "Ganaste"){
-            humanScore++;
-        }else if(result === "Perdiste. La computadora ganó"){
-            computerScore++;
-        }
-    }
-    console.log(`Puntuación final: Humano ${humanScore} - Computadora ${computerScore}`);
-    if (humanScore > computerScore) {
-        console.log("¡Felicidades! Ganaste el juego.");
-    } else if (humanScore < computerScore) {
-        console.log("La computadora ganó el juego. Mejor suerte la próxima vez.");
-    } else {
-        console.log("El juego terminó en empate.");
-    }
-    
-}
-playGame()
-
-/* const humanSelection = getHumanChoice();
-const computerSelection = getComputerChoice(); */
-
-/* console.log(`La elección fue: ${humanSelection}`);
-console.log(`La elección de la computadora fue: ${computerSelection}`);
-console.log(playRound(humanSelection, computerSelection)); */
+// Añadir oyentes de eventos a los botones
+document
+  .getElementById("rock")
+  .addEventListener("click", () => playRound("piedra"));
+document
+  .getElementById("paper")
+  .addEventListener("click", () => playRound("papel"));
+document
+  .getElementById("scissors")
+  .addEventListener("click", () => playRound("tijera"));
